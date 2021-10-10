@@ -24,10 +24,51 @@ async function main() {
 
 await MongoUtil.connect(process.env.MONGO_URL, 'radiology_cases');
 
-app.get('/patientsData', (req, res) => {
-    res.json({
-        "message": "hello world"
-    })
+// app.get('/patientsData', async (req, res) => {
+//     try {
+//     let db = MongoUtil.getDB();
+//     let result = await db.collection('patientsData');
+    
+//         res.status(200);
+//         res.json(result);
+//        } catch (e) {
+//            res.status(500);
+//            res.json({
+//                'error': "We have encountered an interal server error. Please contact admin"
+//            });
+//            console.log(e);
+//     }
+// })
+
+app.get('/patientsData', async (req, res) => {
+    try {
+        let db = MongoUtil.getDB();
+        // start with an empty critera object
+        let criteria = {};
+        // we fill in the critera depending on whether specific
+        // query string keys are provided
+        // if the `description` key exists in req.query
+        if (req.query.signsSymptomsTitle) {
+            criteria['signsSymptomsTitle'] = {
+                '$regex': req.query.signsSymptomsTitle,
+                '$options': 'i'
+            }
+        }
+        if (req.query.studentsTagged) {
+            criteria['studentsTagged'] = {
+                '$in': [req.query.studentsTagged]
+            }
+        }
+        // console.log(criteria)
+        let patientsData = await db.collection('patientsData').toArray();
+        res.status(200);
+        res.send(patientsData);
+    } catch (e) {
+        res.status(500);
+        res.send({
+            'error':"We have encountered an internal server error"
+        })         
+    }
 })
 
 app.post('/patientsData', async (req, res) => {
@@ -35,8 +76,8 @@ app.post('/patientsData', async (req, res) => {
     try {
         // req.body is an object that contains the
         // data sent to the express endpoint
-        let gender = req.body.gender;
-        let clinicalHistory = req.body.clinicalHistory;
+        let signsSymptomsTitle = req.body.signsSymptomsTitle;
+        let studentsTagged = req.body.studentsTagged;
         // check if the datetime key exists in the req.body object
         // if it does, create a new Date object from it
         // or else, default to today's date
@@ -44,7 +85,7 @@ app.post('/patientsData', async (req, res) => {
 
         let db = MongoUtil.getDB();
         let result = await db.collection('patientsData').insertOne({
-            gender, clinicalHistory
+            signsSymptomsTitle, studentsTagged
         })
 
            // inform the client that the process is successful
