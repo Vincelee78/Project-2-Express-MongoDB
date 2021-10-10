@@ -40,7 +40,7 @@ await MongoUtil.connect(process.env.MONGO_URL, 'radiology_cases');
 //     }
 // })
 
-app.get('/patientsData', async (req, res) => {
+app.get('/patientsData1', async (req, res) => {
     try {
         let db = MongoUtil.getDB();
         // start with an empty critera object
@@ -60,9 +60,9 @@ app.get('/patientsData', async (req, res) => {
             }
         }
         // console.log(criteria)
-        let patientsData = await db.collection('patientsData').toArray();
+        let result = await db.collection('patientsData').find(criteria).toArray();
         res.status(200);
-        res.send(patientsData);
+        res.json(result);
     } catch (e) {
         res.status(500);
         res.send({
