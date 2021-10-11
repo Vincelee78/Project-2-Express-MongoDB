@@ -3,7 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 const MongoUtil = require("./MongoUtil.js");
 const ObjectId = require('mongodb').ObjectId;
-MONGO_URL='mongodb+srv://root:rotiprata123@cluster0.ii2xi.mongodb.net/?retryWrites=true&w=majority'
+
 
 
 
