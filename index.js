@@ -77,7 +77,7 @@ app.post('/patientsData', async (req, res) => {
         // req.body is an object that contains the
         // data sent to the express endpoint
         let signsSymptomsTitle = req.body.signsSymptomsTitle;
-        let studentsTagged = req.body.studentsTagged;
+        let bodySystems = req.body.bodySystems;
         // check if the datetime key exists in the req.body object
         // if it does, create a new Date object from it
         // or else, default to today's date
@@ -85,7 +85,7 @@ app.post('/patientsData', async (req, res) => {
 
         let db = MongoUtil.getDB();
         let result = await db.collection('patientsData').insertOne({
-            signsSymptomsTitle, studentsTagged
+            signsSymptomsTitle, bodySystems
         })
 
            // inform the client that the process is successful
