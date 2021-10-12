@@ -110,6 +110,17 @@ app.post('/patientsData', async (req, res) => {
         // data sent to the express endpoint
         let signsSymptomsTitle = req.body.signsSymptomsTitle;
         let bodySystems = req.body.bodySystems;
+        let patientId=req.body.patientId;
+        let gender=req.body.gender;
+        let dob=req.body.dob;
+        let clinicalHistory=req.body.clinicalHistory;
+        let images=req.body.images;
+        let modality=req.body.modality;
+        let publishedDate=req.body.publishedDate;
+        let caseDiscussion=req.body.caseDiscussion;
+        let radiologistId=req.body.radiologistId;
+        let scientificReferences=req.body.scientificReferences
+
         // check if the datetime key exists in the req.body object
         // if it does, create a new Date object from it
         // or else, default to today's date
@@ -117,7 +128,8 @@ app.post('/patientsData', async (req, res) => {
 
         let db = MongoUtil.getDB();
         let result = await db.collection('patientsData').insertOne({
-            signsSymptomsTitle, bodySystems
+            signsSymptomsTitle, bodySystems, gender, dob, clinicalHistory, images, 
+            modality, publishedDate, caseDiscussion, radiologistId, scientificReferences
         })
 
            // inform the client that the process is successful
