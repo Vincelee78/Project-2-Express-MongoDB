@@ -75,25 +75,27 @@ app.get('/patientsData1', async (req, res) => {
 app.get('/featuredCase', async (req, res) => {
     try {
         let db = MongoUtil.getDB();
+        
         // start with an empty critera object
-        let criteria = {};
+        // let criteria = {};
         // we fill in the critera depending on whether specific
         // query string keys are provided
         // if the `description` key exists in req.query
-        if (req.query.signsSymptomsTitle) {
-            criteria['signsSymptomsTitle'] = {
-                '$regex': req.query.signsSymptomsTitle,
-                '$options': 'i'
-            }
-        }
-        if (req.query.studentsTagged) {
-            criteria['studentsTagged'] = {
-                '$in': [req.query.studentsTagged]
-            }
-        }
+        // if (req.query.signsSymptomsTitle) {
+        //     criteria['signsSymptomsTitle'] = {
+        //         '$regex': req.query.signsSymptomsTitle,
+        //         '$options': 'i'
+        //     }
+        // }
+        // if (req.query.studentsTagged) {
+        //     criteria['studentsTagged'] = {
+        //         '$in': [req.query.studentsTagged]
+        //     }
+        // }
         // console.log(criteria)
-        let result = await db.collection('featuredCase').find(criteria).toArray();
-        res.status(200);
+        let result = await db.collection('featuredCase').find().toArray();
+        console.log(result)
+        // res.sendStatus(200);
         res.json(result);
     } catch (e) {
         res.status(500);
