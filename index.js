@@ -105,6 +105,51 @@ app.get('/featuredCase', async (req, res) => {
     }
 })
 
+app.put('/featuredCase/:id', async (req, res) => {
+
+    try {
+        // req.body is an object that contains the
+        // data sent to the express endpoint
+        let signsSymptomsTitle = req.body.signsSymptomsTitle;
+        let bodySystems = req.body.bodySystems;
+        let gender=req.body.gender;
+        let dob=req.body.dob;
+        let clinicalHistory=req.body.clinicalHistory;
+        let images=req.body.images;
+        let modality=req.body.modality;
+        let publishedDate=req.body.publishedDate;
+        let caseDiscussion=req.body.caseDiscussion;
+        let radiologistId=req.body.radiologistId;
+        let scientificReferences=req.body.scientificReferences
+
+        // check if the datetime key exists in the req.body object
+        // if it does, create a new Date object from it
+        // or else, default to today's date
+        // let datetime = req.body.datetime ? new Date(req.body.datetime) : new Date();
+
+        let db = MongoUtil.getDB();
+        let result = await db.collection('patientsData')({
+            '_id': ObjectId(req.params.id)
+        },{
+            '$set':{
+            signsSymptomsTitle, bodySystems, gender, dob, clinicalHistory, images, 
+            modality, publishedDate, caseDiscussion, radiologistId, scientificReferences,
+            }
+        })
+           // inform the client that the process is successful
+           res.status(200);
+           res.json(result);
+       } catch (e) {
+           res.status(500);
+           res.json({
+               'error': "We have encountered an internal server error. Please contact admin"
+           });
+           console.log(e);
+       }
+   })
+
+
+
 app.post('/patientsData', async (req, res) => {
 
     try {
@@ -140,7 +185,7 @@ app.post('/patientsData', async (req, res) => {
        } catch (e) {
            res.status(500);
            res.json({
-               'error': "We have encountered an interal server error. Please contact admin"
+               'error': "We have encountered an internal server error. Please contact admin"
            });
            console.log(e);
        }
