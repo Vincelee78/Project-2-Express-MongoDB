@@ -60,7 +60,7 @@ app.get('/patientsData1', async (req, res) => {
             }
         }
         // console.log(criteria)
-        let result = await db.collection('patientsData').find(criteria).toArray();
+        let result = await db.collection('patientsData').find().toArray();
         res.status(200);
         res.json(result);
     } catch (e) {
@@ -95,7 +95,7 @@ app.get('/featuredCase', async (req, res) => {
         // console.log(criteria)
         let result = await db.collection('featuredCase').find().toArray();
         console.log(result)
-        // res.sendStatus(200);
+        res.status(200);
         res.json(result);
     } catch (e) {
         res.status(500);
