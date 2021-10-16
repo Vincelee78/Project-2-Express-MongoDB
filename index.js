@@ -106,7 +106,7 @@ app.get('/featuredCase', async (req, res) => {
 })
 
 app.put('/featuredCase/:id', async (req, res) => {
-
+    console.log(req.body)
     try {
         // req.body is an object that contains the
         // data sent to the express endpoint
@@ -121,6 +121,8 @@ app.put('/featuredCase/:id', async (req, res) => {
         let caseDiscussion=req.body.caseDiscussion;
         let radiologistId=req.body.radiologistId;
         let scientificReferences=req.body.scientificReferences
+        let patientID=req.body.patientID
+        let ID=req.body._id
 
         // check if the datetime key exists in the req.body object
         // if it does, create a new Date object from it
@@ -128,12 +130,12 @@ app.put('/featuredCase/:id', async (req, res) => {
         // let datetime = req.body.datetime ? new Date(req.body.datetime) : new Date();
 
         let db = MongoUtil.getDB();
-        let result = await db.collection('patientsData')({
+        let result = await db.collection('patientsData').updateOne({
             '_id': ObjectId(req.params.id)
         },{
             '$set':{
             signsSymptomsTitle, bodySystems, gender, dob, clinicalHistory, images, 
-            modality, publishedDate, caseDiscussion, radiologistId, scientificReferences,
+            modality, publishedDate, caseDiscussion, radiologistId, scientificReferences,patientID,ID
             }
         })
            // inform the client that the process is successful
@@ -144,7 +146,7 @@ app.put('/featuredCase/:id', async (req, res) => {
            res.json({
                'error': "We have encountered an internal server error. Please contact admin"
            });
-           console.log(e);
+        //    console.log(result);
        }
    })
 
