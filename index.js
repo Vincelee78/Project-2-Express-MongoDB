@@ -106,7 +106,7 @@ app.get('/featuredCase', async (req, res) => {
 })
 
 app.put('/featuredCase/:id', async (req, res) => {
-    console.log(req.body)
+    // console.log(req.body)
     try {
         // req.body is an object that contains the
         // data sent to the express endpoint
@@ -122,7 +122,7 @@ app.put('/featuredCase/:id', async (req, res) => {
         let radiologistId=req.body.radiologistId;
         let scientificReferences=req.body.scientificReferences
         let patientID=req.body.patientID
-        let ID=req.body._id
+        // let ID=req.body._id
 
         // check if the datetime key exists in the req.body object
         // if it does, create a new Date object from it
@@ -130,12 +130,12 @@ app.put('/featuredCase/:id', async (req, res) => {
         // let datetime = req.body.datetime ? new Date(req.body.datetime) : new Date();
 
         let db = MongoUtil.getDB();
-        let result = await db.collection('patientsData').updateOne({
+        let result = await db.collection('featuredCase').updateOne({
             '_id': ObjectId(req.params.id)
         },{
             '$set':{
             signsSymptomsTitle, bodySystems, gender, dob, clinicalHistory, images, 
-            modality, publishedDate, caseDiscussion, radiologistId, scientificReferences,patientID,ID
+            modality, publishedDate, caseDiscussion, radiologistId, scientificReferences,patientID,
             }
         })
            // inform the client that the process is successful
@@ -150,7 +150,55 @@ app.put('/featuredCase/:id', async (req, res) => {
        }
    })
 
+   app.get('/featuredCase/:id', async (req, res) => {
+    console.log(req.params.id)
+    try {
+        // req.body is an object that contains the
+        // data sent to the express endpoint
+        // let signsSymptomsTitle = req.body.signsSymptomsTitle;
+        // let bodySystems = req.body.bodySystems;
+        // let gender=req.body.gender;
+        // let dob=req.body.dob;
+        // let clinicalHistory=req.body.clinicalHistory;
+        // let images=req.body.images;
+        // let modality=req.body.modality;
+        // let publishedDate=req.body.publishedDate;
+        // let caseDiscussion=req.body.caseDiscussion;
+        // let radiologistId=req.body.radiologistId;
+        // let scientificReferences=req.body.scientificReferences
+        // let patientID=req.body.patientID
+        // let ID=req.body._id
 
+        // let criteria = {}
+
+        // check if the datetime key exists in the req.body object
+        // if it does, create a new Date object from it
+        // or else, default to today's date
+        // let datetime = req.body.datetime ? new Date(req.body.datetime) : new Date();
+
+        let db = MongoUtil.getDB();
+        let result = await db.collection('featuredCase').findOne({
+            '_id': ObjectId(req.params.id)
+        });
+        // {
+        //     '$set':{
+        //     signsSymptomsTitle, bodySystems, gender, dob, clinicalHistory, images, 
+        //     modality, publishedDate, caseDiscussion, radiologistId, scientificReferences,patientID,
+        //     }
+        // }
+        
+           // inform the client that the process is successful
+           console.log("app get", result)
+           res.status(200);
+           res.json(result);
+       } catch (e) {
+           res.status(500);
+           res.json({
+               'error': "We have encountered an internal server error. Please contact admin"
+           });
+        //    console.log(result);
+       }
+   })
 
 app.post('/patientsData', async (req, res) => {
 
@@ -211,9 +259,10 @@ app.post('/patientsData', async (req, res) => {
     res.send(results)
 })
 
-app.delete('/patientsData/:id', async(req,res) => {
+app.delete('/patientsData1/:id', async(req,res) => {
+    console.log(req.params.id)
     let db = MongoUtil.getDB();
-    let results = await db.collection('patientsData').remove({
+    let results = await db.collection('patientsData').deleteOne({
         '_id': ObjectId(req.params.id)
     })
     res.status(200);
