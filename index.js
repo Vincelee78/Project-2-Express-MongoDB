@@ -241,23 +241,54 @@ app.post('/patientsData', async (req, res) => {
        }
    })
 
-   app.put('/patientsData/:id', async(req,res)=>{
+   app.put('/patientsData1/:id', async(req,res)=>{
     // assume that we are replacing the document
-    let gender = req.body.gender;
-    let clinicalHistory = req.body.clinicalHistory;
-    // let datetime = req.body.datetime ? new Date(req.body.datetime) : new Date();
+    let signsSymptomsTitle = req.body.signsSymptomsTitle;
+        let bodySystems = req.body.bodySystems;
+        let gender=req.body.gender;
+        let dob=req.body.dob;
+        let clinicalHistory=req.body.clinicalHistory;
+        let images=req.body.images;
+        let modality=req.body.modality;
+        let publishedDate=req.body.publishedDate;
+        let caseDiscussion=req.body.caseDiscussion;
+        let radiologistId=req.body.radiologistId;
+        let scientificReferences=req.body.scientificReferences
+        let patientID=req.body.patientID
 
     let db = MongoUtil.getDB();
     let results = await db.collection('patientsData').updateOne({
         '_id': ObjectId(req.params.id)
     },{
         '$set':{
-            gender, clinicalHistory
+            signsSymptomsTitle, bodySystems, gender, dob, clinicalHistory, images, 
+            modality, publishedDate, caseDiscussion, radiologistId, scientificReferences,patientID,
         }
     })
     res.status(200);
     res.send(results)
 })
+
+app.get('/patientsData1/:id', async (req, res) => {
+    console.log(req.params.id)
+    try {
+
+        let db = MongoUtil.getDB();
+        let result = await db.collection('patientsData').findOne({
+            '_id': ObjectId(req.params.id)
+        });
+        
+           // inform the client that the process is successful
+           console.log("app get", result)
+           res.status(200);
+           res.json(result);
+       } catch (e) {
+           res.status(500);
+           res.json({
+               'error': "We have encountered an internal server error. Please contact admin"
+           });
+       }
+   })
 
 app.delete('/patientsData1/:id', async(req,res) => {
     console.log(req.params.id)
