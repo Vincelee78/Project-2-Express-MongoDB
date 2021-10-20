@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 const MongoUtil = require("./MongoUtil.js");
 const ObjectId = require('mongodb').ObjectId;
+const { response } = require('express');
 
 
 
@@ -25,12 +26,14 @@ async function main() {
     await MongoUtil.connect(process.env.MONGO_URL, 'radiology_cases');
 
 
-    app.get('/report', async (res) => {
+    app.get('/report', async (req, res) => {
+        
         try {
             let db = MongoUtil.getDB();
             // start with an empty critera object
 
             let result = await db.collection('reportsData').find().toArray();
+            console.log(response)
             res.status(200);
             res.json(result);
         } catch (e) {
@@ -70,7 +73,7 @@ async function main() {
             let db = MongoUtil.getDB();
 
             let result = await db.collection('featuredCase').find().toArray();
-            console.log(result)
+            // console.log(result)
             res.status(200);
             res.json(result);
         } catch (e) {
