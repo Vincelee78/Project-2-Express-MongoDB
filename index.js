@@ -68,6 +68,18 @@ async function main() {
 
     })
 
+    app.delete('/report/:id', async (req, res) => {
+        console.log(req.params.id)
+        let db = MongoUtil.getDB();
+        let results = await db.collection('reportsData').deleteOne({
+            '_id': ObjectId(req.params.id)
+        })
+        res.status(200);
+        res.send(results);
+    })
+
+
+
     app.get('/featuredCase', async (req, res) => {
         try {
             let db = MongoUtil.getDB();
