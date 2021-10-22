@@ -44,8 +44,9 @@ async function main() {
         }
     })
 
-    app.post('/report', async (req, res) => {
+    app.post('/report1', async (req, res) => {
         try {
+            let reportId=req.body.reportId
             let reportTitle = req.body.reportTitle;
             let reportContent = req.body.reportContent;
             let reportReferences = req.body.reportReferences;
@@ -53,7 +54,7 @@ async function main() {
 
             let db = MongoUtil.getDB();
             let result = await db.collection('reportsData').insertOne({
-                reportTitle, reportContent, reportReferences, reportTags
+                reportTitle, reportContent, reportReferences, reportTags,reportId
             })
 
             res.status(200);
