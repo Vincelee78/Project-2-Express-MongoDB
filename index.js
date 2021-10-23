@@ -324,6 +324,35 @@ async function main() {
         res.send(results);
     })
 
+    app.get('/radiologistR01/:id', async (req, res) => {
+        console.log(req.params.id)
+        try {
+            
+
+            let db = MongoUtil.getDB();
+            let result = await db.collection('radiologistsData').findOne({
+                '_id': ObjectId(req.params.id)
+            });
+            // {
+            //     '$set':{
+            //     signsSymptomsTitle, bodySystems, gender, dob, clinicalHistory, images, 
+            //     modality, publishedDate, caseDiscussion, radiologistId, scientificReferences,patientID,
+            //     }
+            // }
+
+            // inform the client that the process is successful
+            console.log("app get", result)
+            res.status(200);
+            res.json(result);
+        } catch (e) {
+            res.status(500);
+            res.json({
+                'error': "We have encountered an internal server error. Please contact admin"
+            });
+            //    console.log(result);
+        }
+    })   
+
 }
 main();
 
