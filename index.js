@@ -378,8 +378,17 @@ async function main() {
         try {
             let db = MongoUtil.getDB();
             // start with an empty critera object
-
-            let result = await db.collection('radiologistsData').find().toArray();
+            // let criteria = {req.query.radiologistId:{'$regex': '^R01$'}};
+            // // we fill in the critera depending on whether specific
+            // // query string keys are provided
+            // // if the `description` key exists in req.query
+            // if (req.query.radiologistId) {
+            //     criteria['radiologistId'] = {
+            //         '$regex': '^R01$',
+            //         // '$options': 'i'
+            //     }
+            // }
+            let result = await db.collection('radiologistsData').find({radiologistId:{'$regex': '^R02$'}}).toArray();
             console.log(response)
             res.status(200);
             res.json(result);
