@@ -352,7 +352,23 @@ async function main() {
             //    console.log(result);
         }
     })   
+    app.get('/radiologistDataFeatured', async (req, res) => {
+        console.log(req)
+        try {
+            let db = MongoUtil.getDB();
+            // start with an empty critera object
 
+            let result = await db.collection('radiologistsData').find({radiologistId:{'$regex': '^R03$'}}).toArray();
+            console.log(response)
+            res.status(200);
+            res.json(result);
+        } catch (e) {
+            res.status(500);
+            res.send({
+                'error': "We have encountered an internal server error"
+            })
+        }
+    })
 
     app.get('/radiologistData', async (req, res) => {
         console.log(req)
