@@ -416,7 +416,40 @@ async function main() {
         }
     })
 
+    app.get('/searchCases', async(req,res)=>{
+        let criteria={};
+
+            if (req.query.search){
+                criteria['$or']=[
+                    {signsSymptomsTitle:{$regex:req.query.search, $options: 'i'}},
+                    {caseDiscussion:{$regex: req.query.search, $options:'i'}},
+                    {modality:{$regex: req.query.search, $options:'i'}},
+                ];
+            }
+        try{
+            let db=MongoUtil.getDB();
+            let result=await db.collection('patientsData').find(criteria).sort({
+                publishedDate:-1,
+            })
+            .toArray();
+            res.status(200);
+            res.json(result);
+
+            
+        } catch (e) {
+            res.status(500);
+            res.send({
+                'error': "We have encountered an internal server error"
+            })
+        }
+        
+        
+        })
+
+    
+
 }
+
 main();
 
 // START SERVER
