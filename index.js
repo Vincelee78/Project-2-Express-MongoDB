@@ -27,7 +27,7 @@ async function main() {
 
 
     app.get('/report', async (req, res) => {
-        
+
         try {
             let db = MongoUtil.getDB();
             // start with an empty critera object
@@ -46,7 +46,7 @@ async function main() {
 
     app.post('/report1', async (req, res) => {
         try {
-            let reportId=req.body.reportId
+            let reportId = req.body.reportId
             let reportTitle = req.body.reportTitle;
             let reportContent = req.body.reportContent;
             let reportReferences = req.body.reportReferences;
@@ -54,7 +54,7 @@ async function main() {
 
             let db = MongoUtil.getDB();
             let result = await db.collection('reportsData').insertOne({
-                reportTitle, reportContent, reportReferences, reportTags,reportId
+                reportTitle, reportContent, reportReferences, reportTags, reportId
             })
 
             res.status(200);
@@ -231,7 +231,7 @@ async function main() {
             // data sent to the express endpoint
             let signsSymptomsTitle = req.body.signsSymptomsTitle;
             let bodySystems = req.body.bodySystems;
-            let patientId = req.body.patientId;
+            let patientID = req.body.patientID;
             let gender = req.body.gender;
             let dob = req.body.dob;
             let clinicalHistory = req.body.clinicalHistory;
@@ -246,11 +246,11 @@ async function main() {
             // if it does, create a new Date object from it
             // or else, default to today's date
             // let datetime = req.body.datetime ? new Date(req.body.datetime) : new Date();
-
+            
             let db = MongoUtil.getDB();
             let result = await db.collection('patientsData').insertOne({
                 signsSymptomsTitle, bodySystems, gender, dob, clinicalHistory, images,
-                modality, publishedDate, caseDiscussion, radiologistId, scientificReferences, patientId
+                modality, publishedDate, caseDiscussion, radiologistId, scientificReferences, patientID
             })
 
             // inform the client that the process is successful
@@ -327,7 +327,7 @@ async function main() {
     app.get('/radiologistR01/:id', async (req, res) => {
         console.log(req.params.id)
         try {
-            
+
 
             let db = MongoUtil.getDB();
             let result = await db.collection('radiologistsData').findOne({
@@ -351,14 +351,14 @@ async function main() {
             });
             //    console.log(result);
         }
-    })   
+    })
     app.get('/radiologistDataFeatured', async (req, res) => {
         console.log(req)
         try {
             let db = MongoUtil.getDB();
             // start with an empty critera object
 
-            let result = await db.collection('radiologistsData').find({radiologistId:{'$regex': '^R03$'}}).toArray();
+            let result = await db.collection('radiologistsData').find({ radiologistId: { '$regex': '^R03$' } }).toArray();
             console.log(response)
             res.status(200);
             res.json(result);
@@ -390,7 +390,7 @@ async function main() {
 
 
     app.get('/allRadiologistData', async (req, res) => {
-        console.log(req)
+
         try {
             let db = MongoUtil.getDB();
             // start with an empty critera object
@@ -404,7 +404,7 @@ async function main() {
             //         // '$options': 'i'
             //     }
             // }
-            let result = await db.collection('radiologistsData').find({radiologistId:{'$regex': '^R02$'}}).toArray();
+            let result = await db.collection('radiologistsData').find({ radiologistId: { '$regex': '^R02$' } }).toArray();
             console.log(response)
             res.status(200);
             res.json(result);
@@ -416,37 +416,167 @@ async function main() {
         }
     })
 
-    app.get('/searchCases', async(req,res)=>{
-        let criteria={};
+    app.get('/searchCases', async (req, res) => {
+        let criteria = {};
 
-            if (req.query.search){
-                criteria['$or']=[
-                    {signsSymptomsTitle:{$regex:req.query.search, $options: 'i'}},
-                    {caseDiscussion:{$regex: req.query.search, $options:'i'}},
-                    {modality:{$regex: req.query.search, $options:'i'}},
-                ];
-            }
-        try{
-            let db=MongoUtil.getDB();
-            let result=await db.collection('patientsData').find(criteria).sort({
-                publishedDate:-1,
+        if (req.query.search) {
+            criteria['$or'] = [
+                { signsSymptomsTitle: { $regex: req.query.search, $options: 'i' } },
+                { caseDiscussion: { $regex: req.query.search, $options: 'i' } },
+                { modality: { $regex: req.query.search, $options: 'i' } },
+            ];
+        }
+        try {
+            let db = MongoUtil.getDB();
+            let result = await db.collection('patientsData').find(criteria).sort({
+                publishedDate: -1,
             })
-            .toArray();
+                .toArray();
             res.status(200);
             res.json(result);
 
-            
+
         } catch (e) {
             res.status(500);
             res.send({
                 'error': "We have encountered an internal server error"
             })
         }
-        
-        
-        })
 
-    
+
+    })
+
+    app.get('/filterAgeMore60', async (req, res) => {
+        let criteria = {
+            'dob': {
+                $lte: new Date('1961-01-01')
+
+            },
+        }
+
+        let projection = {
+
+            'patientID': 0,
+
+        };
+
+
+        try {
+            let db = MongoUtil.getDB();
+            let result = await db.collection('patientsData').find(criteria).project(projection).sort({
+                publishedDate: -1,
+            })
+                .toArray();
+            res.status(200);
+            res.json(result);
+
+
+        } catch (e) {
+            res.status(500);
+            res.send({
+                'error': "We have encountered an internal server error"
+            })
+        }
+
+
+    })
+
+
+    app.get('/filterAgeLess21', async (req, res) => {
+        let criteria = {
+            'dob': {
+                $gt: new Date('2000-10-31')
+
+            },
+        }
+
+        let projection = {
+
+            'patientID': 0,
+
+        };
+
+
+        try {
+            let db = MongoUtil.getDB();
+            let result = await db.collection('patientsData').find(criteria).project(projection).sort({
+                publishedDate: -1,
+            })
+                .toArray();
+            res.status(200);
+            res.json(result);
+
+
+        } catch (e) {
+            res.status(500);
+            res.send({
+                'error': "We have encountered an internal server error"
+            })
+        }
+
+
+    })
+
+    app.get('/modalityUltrasound', async (req, res) => {
+            let criteria = {
+            
+            'modality': 'Ultrasound',
+
+            };
+
+
+
+
+        try {
+            let db = MongoUtil.getDB();
+            let result = await db.collection('patientsData').find(criteria).sort({
+                publishedDate: -1,
+            })
+                .toArray();
+            res.status(200);
+            res.json(result);
+
+
+        } catch (e) {
+            res.status(500);
+            res.send({
+                'error': "We have encountered an internal server error"
+            })
+        }
+
+
+    })
+
+    app.get('/cardioEndocrineSystem', async (req, res) => {
+        let criteria = {
+        
+        'bodySystems': {
+            '$in':['Endocrine', 'Cardiovascular']
+        }
+        };
+
+
+
+
+    try {
+        let db = MongoUtil.getDB();
+        let result = await db.collection('patientsData').find(criteria).sort({
+            publishedDate: -1,
+        })
+            .toArray();
+        res.status(200);
+        res.json(result);
+
+
+    } catch (e) {
+        res.status(500);
+        res.send({
+            'error': "We have encountered an internal server error"
+        })
+    }
+
+
+})
 
 }
 
