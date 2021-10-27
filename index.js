@@ -217,7 +217,7 @@ async function main() {
         let signsSymptomsTitle = req.body.signsSymptomsTitle;
         let bodySystems = req.body.bodySystems;
         let gender = req.body.gender;
-        let dob = req.body.dob;
+        let dob = new Date(req.body.dob);
         let clinicalHistory = req.body.clinicalHistory;
         let images = req.body.images;
         let modality = req.body.modality;
