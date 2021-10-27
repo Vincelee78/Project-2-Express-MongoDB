@@ -30,7 +30,7 @@ async function main() {
 
         try {
             let db = MongoUtil.getDB();
-            // start with an empty critera object
+
 
             let result = await db.collection('reportsData').find().toArray();
             console.log(response)
@@ -44,7 +44,7 @@ async function main() {
         }
     })
 
-    app.post('/report1', async (req, res) => {
+    app.post('/createReport', async (req, res) => {
         try {
             let reportId = req.body.reportId
             let reportTitle = req.body.reportTitle;
@@ -86,7 +86,7 @@ async function main() {
             let db = MongoUtil.getDB();
 
             let result = await db.collection('featuredCase').find().toArray();
-            // console.log(result)
+
             res.status(200);
             res.json(result);
         } catch (e) {
@@ -98,7 +98,7 @@ async function main() {
     })
 
     app.put('/featuredCase/:id', async (req, res) => {
-        // console.log(req.body)
+
         try {
             // req.body is an object that contains the
             // data sent to the express endpoint
@@ -114,12 +114,7 @@ async function main() {
             let radiologistId = req.body.radiologistId;
             let scientificReferences = req.body.scientificReferences
             let patientID = req.body.patientID
-            // let ID=req.body._id
 
-            // check if the datetime key exists in the req.body object
-            // if it does, create a new Date object from it
-            // or else, default to today's date
-            // let datetime = req.body.datetime ? new Date(req.body.datetime) : new Date();
 
             let db = MongoUtil.getDB();
             let result = await db.collection('featuredCase').updateOne({
@@ -138,30 +133,15 @@ async function main() {
             res.json({
                 'error': "We have encountered an internal server error. Please contact admin"
             });
-            //    console.log(result);
+
         }
     })
 
-    app.get('/patientsData1', async (req, res) => {
+    app.get('/patientsDataAllCases', async (req, res) => {
         try {
             let db = MongoUtil.getDB();
-            // start with an empty critera object
-            let criteria = {};
-            // we fill in the critera depending on whether specific
-            // query string keys are provided
-            // if the `description` key exists in req.query
-            if (req.query.signsSymptomsTitle) {
-                criteria['signsSymptomsTitle'] = {
-                    '$regex': req.query.signsSymptomsTitle,
-                    '$options': 'i'
-                }
-            }
-            if (req.query.studentsTagged) {
-                criteria['studentsTagged'] = {
-                    '$in': [req.query.studentsTagged]
-                }
-            }
-            // console.log(criteria)
+
+
             let result = await db.collection('patientsData').find().toArray();
             res.status(200);
             res.json(result);
@@ -176,39 +156,11 @@ async function main() {
     app.get('/featuredCase/:id', async (req, res) => {
         console.log(req.params.id)
         try {
-            // req.body is an object that contains the
-            // data sent to the express endpoint
-            // let signsSymptomsTitle = req.body.signsSymptomsTitle;
-            // let bodySystems = req.body.bodySystems;
-            // let gender=req.body.gender;
-            // let dob=req.body.dob;
-            // let clinicalHistory=req.body.clinicalHistory;
-            // let images=req.body.images;
-            // let modality=req.body.modality;
-            // let publishedDate=req.body.publishedDate;
-            // let caseDiscussion=req.body.caseDiscussion;
-            // let radiologistId=req.body.radiologistId;
-            // let scientificReferences=req.body.scientificReferences
-            // let patientID=req.body.patientID
-            // let ID=req.body._id
-
-            // let criteria = {}
-
-            // check if the datetime key exists in the req.body object
-            // if it does, create a new Date object from it
-            // or else, default to today's date
-            // let datetime = req.body.datetime ? new Date(req.body.datetime) : new Date();
 
             let db = MongoUtil.getDB();
             let result = await db.collection('featuredCase').findOne({
                 '_id': ObjectId(req.params.id)
             });
-            // {
-            //     '$set':{
-            //     signsSymptomsTitle, bodySystems, gender, dob, clinicalHistory, images, 
-            //     modality, publishedDate, caseDiscussion, radiologistId, scientificReferences,patientID,
-            //     }
-            // }
 
             // inform the client that the process is successful
             console.log("app get", result)
@@ -219,16 +171,15 @@ async function main() {
             res.json({
                 'error': "We have encountered an internal server error. Please contact admin"
             });
-            //    console.log(result);
+
         }
     })
 
 
-    app.post('/patientsData', async (req, res) => {
+    app.post('/createNewCase', async (req, res) => {
 
         try {
-            // req.body is an object that contains the
-            // data sent to the express endpoint
+
             let signsSymptomsTitle = req.body.signsSymptomsTitle;
             let bodySystems = req.body.bodySystems;
             let patientID = req.body.patientID;
@@ -242,11 +193,7 @@ async function main() {
             let radiologistId = req.body.radiologistId;
             let scientificReferences = req.body.scientificReferences
 
-            // check if the datetime key exists in the req.body object
-            // if it does, create a new Date object from it
-            // or else, default to today's date
-            // let datetime = req.body.datetime ? new Date(req.body.datetime) : new Date();
-            
+
             let db = MongoUtil.getDB();
             let result = await db.collection('patientsData').insertOne({
                 signsSymptomsTitle, bodySystems, gender, dob, clinicalHistory, images,
@@ -265,7 +212,7 @@ async function main() {
         }
     })
 
-    app.put('/patientsData1/:id', async (req, res) => {
+    app.put('/updateEditedPatientCase/:id', async (req, res) => {
         // assume that we are replacing the document
         let signsSymptomsTitle = req.body.signsSymptomsTitle;
         let bodySystems = req.body.bodySystems;
@@ -293,8 +240,8 @@ async function main() {
         res.send(results)
     })
 
-    app.get('/patientsData1/:id', async (req, res) => {
-        console.log(req.params.id)
+    app.get('/retrieveEditedPatientCase/:id', async (req, res) => {
+
         try {
 
             let db = MongoUtil.getDB();
@@ -303,7 +250,7 @@ async function main() {
             });
 
             // inform the client that the process is successful
-            console.log("app get", result)
+
             res.status(200);
             res.json(result);
         } catch (e) {
@@ -314,7 +261,7 @@ async function main() {
         }
     })
 
-    app.delete('/patientsData1/:id', async (req, res) => {
+    app.delete('/patientsDataAllCases/:id', async (req, res) => {
         console.log(req.params.id)
         let db = MongoUtil.getDB();
         let results = await db.collection('patientsData').deleteOne({
@@ -324,34 +271,8 @@ async function main() {
         res.send(results);
     })
 
-    app.get('/radiologistR01/:id', async (req, res) => {
-        console.log(req.params.id)
-        try {
+    
 
-
-            let db = MongoUtil.getDB();
-            let result = await db.collection('radiologistsData').findOne({
-                '_id': ObjectId(req.params.id)
-            });
-            // {
-            //     '$set':{
-            //     signsSymptomsTitle, bodySystems, gender, dob, clinicalHistory, images, 
-            //     modality, publishedDate, caseDiscussion, radiologistId, scientificReferences,patientID,
-            //     }
-            // }
-
-            // inform the client that the process is successful
-            console.log("app get", result)
-            res.status(200);
-            res.json(result);
-        } catch (e) {
-            res.status(500);
-            res.json({
-                'error': "We have encountered an internal server error. Please contact admin"
-            });
-            //    console.log(result);
-        }
-    })
     app.get('/radiologistDataFeatured', async (req, res) => {
         console.log(req)
         try {
@@ -370,7 +291,7 @@ async function main() {
         }
     })
 
-    app.get('/radiologistData', async (req, res) => {
+    app.get('/allradiologistData', async (req, res) => {
         console.log(req)
         try {
             let db = MongoUtil.getDB();
@@ -389,7 +310,7 @@ async function main() {
     })
 
 
-    app.get('/allRadiologistData', async (req, res) => {
+    app.get('/allRadiologistDataforAllCases', async (req, res) => {
 
         try {
             let db = MongoUtil.getDB();
@@ -404,8 +325,8 @@ async function main() {
             //         // '$options': 'i'
             //     }
             // }
-            let result = await db.collection('radiologistsData').find({ radiologistId: { '$regex': '^R02$' } }).toArray();
-            console.log(response)
+            let result = await db.collection('radiologistsData').find().toArray();
+
             res.status(200);
             res.json(result);
         } catch (e) {
@@ -518,13 +439,11 @@ async function main() {
     })
 
     app.get('/modalityUltrasound', async (req, res) => {
-            let criteria = {
-            
+        let criteria = {
+
             'modality': 'Ultrasound',
 
-            };
-
-
+        };
 
 
         try {
@@ -547,36 +466,35 @@ async function main() {
 
     })
 
+
     app.get('/cardioEndocrineSystem', async (req, res) => {
         let criteria = {
-        
-        'bodySystems': {
-            '$in':['Endocrine', 'Cardiovascular']
-        }
+
+            'bodySystems': {
+                '$in': ['Endocrine', 'Cardiovascular']
+            }
         };
 
 
+        try {
+            let db = MongoUtil.getDB();
+            let result = await db.collection('patientsData').find(criteria).sort({
+                publishedDate: -1,
+            })
+                .toArray();
+            res.status(200);
+            res.json(result);
 
 
-    try {
-        let db = MongoUtil.getDB();
-        let result = await db.collection('patientsData').find(criteria).sort({
-            publishedDate: -1,
-        })
-            .toArray();
-        res.status(200);
-        res.json(result);
+        } catch (e) {
+            res.status(500);
+            res.send({
+                'error': "We have encountered an internal server error"
+            })
+        }
 
 
-    } catch (e) {
-        res.status(500);
-        res.send({
-            'error': "We have encountered an internal server error"
-        })
-    }
-
-
-})
+    })
 
 }
 
