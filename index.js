@@ -292,7 +292,7 @@ async function main() {
     })
 
     app.get('/allradiologistData', async (req, res) => {
-        console.log(req)
+        
         try {
             let db = MongoUtil.getDB();
             // start with an empty critera object
@@ -326,7 +326,8 @@ async function main() {
             //     }
             // }
             let result = await db.collection('radiologistsData').find().toArray();
-
+                
+            
             res.status(200);
             res.json(result);
         } catch (e) {
