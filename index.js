@@ -69,6 +69,31 @@ async function main() {
 
     })
 
+    app.post('/AddRadiologist', async (req, res) => {
+        try {
+            let radiologistId = req.body.radiologistId
+            let radiologistName = req.body.radiologistName;
+            let speciality = req.body.speciality;
+            let medicalInstitution = req.medicalInstitution;
+            let email = req.body.email;
+
+            let db = MongoUtil.getDB();
+            let result = await db.collection('radiologistsData').insertOne({
+                radiologistId, radiologistName, speciality, medicalInstitution, email
+            })
+
+            res.status(200);
+            res.json(result)
+        } catch (e) {
+            res.status(500);
+            res.json({
+                'error': 'We have encountered an internal server error. Please contact admin'
+            });
+
+        }
+
+    })
+
     app.delete('/report/:id', async (req, res) => {
         console.log(req.params.id)
         let db = MongoUtil.getDB();
