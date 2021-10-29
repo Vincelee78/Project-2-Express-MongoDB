@@ -74,7 +74,7 @@ async function main() {
             let radiologistId = req.body.radiologistId
             let radiologistName = req.body.radiologistName;
             let speciality = req.body.speciality;
-            let medicalInstitution = req.medicalInstitution;
+            let medicalInstitution = req.body.medicalInstitution;
             let email = req.body.email;
 
             let db = MongoUtil.getDB();
