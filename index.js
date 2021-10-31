@@ -22,10 +22,10 @@ app.use(express.json());
 app.use(cors());
 
 async function main() {
-
+    // connect to radiology_cases database in mongoDB
     await MongoUtil.connect(process.env.MONGO_URL, 'radiology_cases');
 
-
+    // retrieve data from report endpoint url from reportsData collection
     app.get('/report', async (req, res) => {
 
         try {
@@ -33,9 +33,10 @@ async function main() {
 
 
             let result = await db.collection('reportsData').find().toArray();
-            console.log(response)
+
             res.status(200);
             res.json(result);
+            // display server error if unable to get data from mongoDB
         } catch (e) {
             res.status(500);
             res.send({
@@ -44,6 +45,7 @@ async function main() {
         }
     })
 
+    // send data from server side using endpoint url to reportsData collection in mongoDB and insert a new document
     app.post('/createReport', async (req, res) => {
         try {
             let reportId = req.body.reportId
@@ -59,6 +61,8 @@ async function main() {
 
             res.status(200);
             res.json(result)
+
+            // display server error if unable to send data to mongoDB
         } catch (e) {
             res.status(500);
             res.json({
@@ -69,6 +73,7 @@ async function main() {
 
     })
 
+    // send data from server side using endpoint url to radiologistsData collection in mongoDB and insert a new document
     app.post('/AddRadiologist', async (req, res) => {
         try {
             let radiologistId = req.body.radiologistId
@@ -84,6 +89,8 @@ async function main() {
 
             res.status(200);
             res.json(result)
+
+            // display server error if unable to send data to mongoDB
         } catch (e) {
             res.status(500);
             res.json({
@@ -94,8 +101,9 @@ async function main() {
 
     })
 
+    // send data to mongoDB in reportsData collection from server side to delete the document by its ObjectId in mongoDB
     app.delete('/report/:id', async (req, res) => {
-        console.log(req.params.id)
+
         let db = MongoUtil.getDB();
         let results = await db.collection('reportsData').deleteOne({
             '_id': ObjectId(req.params.id)
@@ -105,7 +113,7 @@ async function main() {
     })
 
 
-
+    // retrieve data from featuredCase endpoint url from reportsData collection in mongoDB
     app.get('/featuredCase', async (req, res) => {
         try {
             let db = MongoUtil.getDB();
@@ -114,6 +122,8 @@ async function main() {
 
             res.status(200);
             res.json(result);
+
+            // display server error if unable to get data from mongoDB
         } catch (e) {
             res.status(500);
             res.send({
@@ -122,6 +132,7 @@ async function main() {
         }
     })
 
+    // update the document based on its Id in the featuredCase collection in mongoDB
     app.put('/featuredCase/:id', async (req, res) => {
 
         try {
@@ -143,8 +154,10 @@ async function main() {
 
             let db = MongoUtil.getDB();
             let result = await db.collection('featuredCase').updateOne({
+                // update document based on its objectId
                 '_id': ObjectId(req.params.id)
             }, {
+                // set these fields below to the new modified fields
                 '$set': {
                     signsSymptomsTitle, bodySystems, gender, dob, clinicalHistory, images,
                     modality, publishedDate, caseDiscussion, radiologistId, scientificReferences, patientID,
@@ -153,6 +166,7 @@ async function main() {
             // inform the client that the process is successful
             res.status(200);
             res.json(result);
+            // display error if unable to replace document data in mongoDB
         } catch (e) {
             res.status(500);
             res.json({
@@ -162,6 +176,7 @@ async function main() {
         }
     })
 
+    // retrieve data from all cases endpoint url from patientsData collection in mongoDB
     app.get('/patientsDataAllCases', async (req, res) => {
         try {
             let db = MongoUtil.getDB();
@@ -178,8 +193,10 @@ async function main() {
         }
     })
 
+    // retrieve updated modified data based on the document objectId in featuredCase collection after editing(app.put) in 
+    //mongoDB after the data has been updated
     app.get('/featuredCase/:id', async (req, res) => {
-        console.log(req.params.id)
+
         try {
 
             let db = MongoUtil.getDB();
@@ -188,7 +205,6 @@ async function main() {
             });
 
             // inform the client that the process is successful
-            console.log("app get", result)
             res.status(200);
             res.json(result);
         } catch (e) {
@@ -200,7 +216,7 @@ async function main() {
         }
     })
 
-
+    // send data from server side using endpoint url to patientsData collection in mongoDB and insert a new document
     app.post('/createNewCase', async (req, res) => {
 
         try {
@@ -237,8 +253,9 @@ async function main() {
         }
     })
 
+    // update the document based on its objectId in the patientsData collection in mongoDB
     app.put('/updateEditedPatientCase/:id', async (req, res) => {
-        // assume that we are replacing the document
+
         let signsSymptomsTitle = req.body.signsSymptomsTitle;
         let bodySystems = req.body.bodySystems;
         let gender = req.body.gender;
@@ -265,6 +282,8 @@ async function main() {
         res.send(results)
     })
 
+    // retrieve updated modified data based on the document objectId in patientsData collection after editing(app.put) in 
+    //mongoDB after the data has been updated
     app.get('/retrieveEditedPatientCase/:id', async (req, res) => {
 
         try {
@@ -286,6 +305,7 @@ async function main() {
         }
     })
 
+    // send data to mongoDB in patientdsData collection from server side to delete the document by its ObjectId in mongoDB
     app.delete('/patientsDataAllCases/:id', async (req, res) => {
         console.log(req.params.id)
         let db = MongoUtil.getDB();
@@ -296,16 +316,16 @@ async function main() {
         res.send(results);
     })
 
-    
 
+    // retrieve the data for the radiologist details field in the featured case 
     app.get('/radiologistDataFeatured', async (req, res) => {
         console.log(req)
         try {
             let db = MongoUtil.getDB();
-            // start with an empty critera object
 
+            // retrieve the document in radiologistsData collection which has the radiologistId as R03
             let result = await db.collection('radiologistsData').find({ radiologistId: { '$regex': '^R03$' } }).toArray();
-            console.log(response)
+
             res.status(200);
             res.json(result);
         } catch (e) {
@@ -316,14 +336,15 @@ async function main() {
         }
     })
 
+    // retrieve all the radiologist data from the radiologistsData collection to display in the radiologists information page in 
+    // React
     app.get('/allradiologistData', async (req, res) => {
-        
+
         try {
             let db = MongoUtil.getDB();
-            // start with an empty critera object
 
             let result = await db.collection('radiologistsData').find().toArray();
-            console.log(response)
+
             res.status(200);
             res.json(result);
         } catch (e) {
@@ -334,25 +355,14 @@ async function main() {
         }
     })
 
-
+    // retrieve all the radiologist data from the radiologistsData collection to display in the radiologist ID field in the all 
+    // cases page in React
     app.get('/allRadiologistDataforAllCases', async (req, res) => {
 
         try {
             let db = MongoUtil.getDB();
-            // start with an empty critera object
-            // let criteria = {req.query.radiologistId:{'$regex': '^R01$'}};
-            // // we fill in the critera depending on whether specific
-            // // query string keys are provided
-            // // if the `description` key exists in req.query
-            // if (req.query.radiologistId) {
-            //     criteria['radiologistId'] = {
-            //         '$regex': '^R01$',
-            //         // '$options': 'i'
-            //     }
-            // }
             let result = await db.collection('radiologistsData').find().toArray();
-                
-            
+
             res.status(200);
             res.json(result);
         } catch (e) {
@@ -363,10 +373,12 @@ async function main() {
         }
     })
 
+    // retrieve all patient cases based on the search criteria
     app.get('/searchCases', async (req, res) => {
         let criteria = {};
 
         if (req.query.search) {
+            // search for the user's keywords in 3 fields, signsSymptomsTitle or caseDiscussion or modality
             criteria['$or'] = [
                 { signsSymptomsTitle: { $regex: req.query.search, $options: 'i' } },
                 { caseDiscussion: { $regex: req.query.search, $options: 'i' } },
@@ -376,6 +388,7 @@ async function main() {
         try {
             let db = MongoUtil.getDB();
             let result = await db.collection('patientsData').find(criteria).sort({
+                // display the results by the most recent published date
                 publishedDate: -1,
             })
                 .toArray();
@@ -393,14 +406,16 @@ async function main() {
 
     })
 
+    // retrieve the data from patientsData collection to filter based on patient's age more than 60
     app.get('/filterAgeMore60', async (req, res) => {
         let criteria = {
+            // any date less than or equal to year 1960 is more than 60 years old
             'dob': {
                 $lte: new Date('1961-01-01')
 
             },
         }
-
+        // project all fields except the patient ID
         let projection = {
 
             'patientID': 0,
@@ -411,6 +426,7 @@ async function main() {
         try {
             let db = MongoUtil.getDB();
             let result = await db.collection('patientsData').find(criteria).project(projection).sort({
+                // display the results by the most recent published date
                 publishedDate: -1,
             })
                 .toArray();
@@ -428,15 +444,17 @@ async function main() {
 
     })
 
-
+    // retrieve the data from patientsData collection to filter based on patient's age less than 21
     app.get('/filterAgeLess21', async (req, res) => {
         let criteria = {
+            // any date greater than year 2000 is less than 21 years old
             'dob': {
                 $gt: new Date('2000-10-31')
 
             },
         }
 
+        // project all fields except the patient ID
         let projection = {
 
             'patientID': 0,
@@ -447,6 +465,7 @@ async function main() {
         try {
             let db = MongoUtil.getDB();
             let result = await db.collection('patientsData').find(criteria).project(projection).sort({
+                // display the results by the most recent published date
                 publishedDate: -1,
             })
                 .toArray();
@@ -464,14 +483,15 @@ async function main() {
 
     })
 
+    // retrieve the data from patientsData collection to filter based on all ultrasound cases
     app.get('/modalityUltrasound', async (req, res) => {
         let criteria = {
-
+            // show all cases if modality is ultrasound
             'modality': 'Ultrasound',
 
         };
         let projection = {
-
+            // project all fields except the patient ID
             'patientID': 0,
 
         };
@@ -479,6 +499,7 @@ async function main() {
         try {
             let db = MongoUtil.getDB();
             let result = await db.collection('patientsData').find(criteria).project(projection).sort({
+                // display the results by the most recent published date
                 publishedDate: -1,
             })
                 .toArray();
@@ -496,10 +517,11 @@ async function main() {
 
     })
 
-
+    // retrieve the data from patientsData collection to filter based on all cardiovascular or endocrine system 
+    // in the bodysystems array
     app.get('/cardioEndocrineSystem', async (req, res) => {
         let criteria = {
-
+            // select all cases with bodysystems array that has endocrine or cardiovascular in its array
             'bodySystems': {
                 '$in': ['Endocrine', 'Cardiovascular']
             }
@@ -509,6 +531,7 @@ async function main() {
         try {
             let db = MongoUtil.getDB();
             let result = await db.collection('patientsData').find(criteria).sort({
+                // display the results by the most recent published date
                 publishedDate: -1,
             })
                 .toArray();
