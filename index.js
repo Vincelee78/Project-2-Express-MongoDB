@@ -315,11 +315,29 @@ async function main() {
         res.status(200);
         res.send(results);
     })
+    
+    // retrieve the data for the patients info details field in the featured case 
+    app.get('/patientInfoFeatured', async (req, res) => {
+        
+        try {
+            let db = MongoUtil.getDB();
 
+            // retrieve the document in patientsInfo collection 
+            let result = await db.collection('patientsinfo').find().toArray();
+
+            res.status(200);
+            res.json(result);
+        } catch (e) {
+            res.status(500);
+            res.send({
+                'error': "We have encountered an internal server error"
+            })
+        }
+    })
 
     // retrieve the data for the radiologist details field in the featured case 
     app.get('/radiologistDataFeatured', async (req, res) => {
-        console.log(req)
+        
         try {
             let db = MongoUtil.getDB();
 
