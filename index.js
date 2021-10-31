@@ -470,11 +470,15 @@ async function main() {
             'modality': 'Ultrasound',
 
         };
+        let projection = {
 
+            'patientID': 0,
+
+        };
 
         try {
             let db = MongoUtil.getDB();
-            let result = await db.collection('patientsData').find(criteria).sort({
+            let result = await db.collection('patientsData').find(criteria).project(projection).sort({
                 publishedDate: -1,
             })
                 .toArray();
