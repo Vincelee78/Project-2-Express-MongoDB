@@ -4,6 +4,8 @@ require('dotenv').config();
 const MongoUtil = require("./MongoUtil.js");
 const ObjectId = require('mongodb').ObjectId;
 const { response } = require('express');
+const yup = require('yup');
+
 
 
 
@@ -47,7 +49,16 @@ async function main() {
 
     // send data from server side using endpoint url to reportsData collection in mongoDB and insert a new document
     app.post('/createReport', async (req, res) => {
+        let formSchema = yup.object().shape({
+            reportId: yup.string().required(),
+            reportTags: yup.array().of(yup.string()).required(),
+            reportContent: yup.string().required(),
+            reportReferences: yup.string().required(),
+            reportTitle: yup.string().required(),
+          });
         try {
+            await formSchema.validate(req.body)
+
             let reportId = req.body.reportId
             let reportTitle = req.body.reportTitle;
             let reportContent = req.body.reportContent;
@@ -66,7 +77,7 @@ async function main() {
         } catch (e) {
             res.status(500);
             res.json({
-                'error': 'We have encountered an internal server error. Please contact admin'
+                'error': e.message
             });
 
         }
@@ -75,6 +86,7 @@ async function main() {
 
     // send data from server side using endpoint url to radiologistsData collection in mongoDB and insert a new document
     app.post('/AddRadiologist', async (req, res) => {
+        
         try {
             let radiologistId = req.body.radiologistId
             let radiologistName = req.body.radiologistName;
@@ -218,8 +230,24 @@ async function main() {
 
     // send data from server side using endpoint url to patientsData collection in mongoDB and insert a new document
     app.post('/createNewCase', async (req, res) => {
-
+        let formSchema = yup.object().shape({
+            signsSymptomsTitle: yup.string().required(),
+            bodySystems: yup.array().of(yup.string()).required(),
+            patientID: yup.string().required(),
+            gender: yup.string().required(),
+            dob: yup.string().required(),
+            clinicalHistory: yup.string().required(),
+            images: yup.string().required(),
+            modality: yup.string().required(),
+            publishedDate: yup.string().required(),
+            caseDiscussion: yup.string().required(),
+            radiologistId: yup.string().required(),
+            scientificReferences: yup.string().required(),
+          });
+          
         try {
+            await formSchema.validate(req.body)
+
 
             let signsSymptomsTitle = req.body.signsSymptomsTitle;
             let bodySystems = req.body.bodySystems;
@@ -234,7 +262,7 @@ async function main() {
             let radiologistId = req.body.radiologistId;
             let scientificReferences = req.body.scientificReferences
 
-
+                
             let db = MongoUtil.getDB();
             let result = await db.collection('patientsData').insertOne({
                 signsSymptomsTitle, bodySystems, gender, dob, clinicalHistory, images,
@@ -244,10 +272,11 @@ async function main() {
             // inform the client that the process is successful
             res.status(200);
             res.json(result);
+        
         } catch (e) {
             res.status(500);
             res.json({
-                'error': "We have encountered an internal server error. Please contact admin"
+                'error': e.message
             });
             console.log(e);
         }
@@ -315,10 +344,10 @@ async function main() {
         res.status(200);
         res.send(results);
     })
-    
+
     // retrieve the data for the patients info details field in the featured case 
     app.get('/patientInfoFeatured', async (req, res) => {
-        
+
         try {
             let db = MongoUtil.getDB();
 
@@ -337,7 +366,7 @@ async function main() {
 
     // retrieve the data for the radiologist details field in the featured case 
     app.get('/radiologistDataFeatured', async (req, res) => {
-        
+
         try {
             let db = MongoUtil.getDB();
 
@@ -572,7 +601,7 @@ async function main() {
 main();
 
 // START SERVER
-app.listen(process.env.PORT, () => {
+app.listen(6000, () => {
     console.log("Server started")
 })
 
