@@ -86,8 +86,16 @@ async function main() {
 
     // send data from server side using endpoint url to radiologistsData collection in mongoDB and insert a new document
     app.post('/AddRadiologist', async (req, res) => {
-        
+        let formSchema = yup.object().shape({
+            radiologistId: yup.string().required(),
+            radiologistName: yup.string().required(),
+            speciality: yup.string().required(),
+            medicalInstitution: yup.string().required(),
+            email: yup.string().email(),
+          });
         try {
+            await formSchema.validate(req.body)
+
             let radiologistId = req.body.radiologistId
             let radiologistName = req.body.radiologistName;
             let speciality = req.body.speciality;
@@ -106,7 +114,7 @@ async function main() {
         } catch (e) {
             res.status(500);
             res.json({
-                'error': 'We have encountered an internal server error. Please contact admin'
+                'error': e.message
             });
 
         }
