@@ -1,6 +1,6 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
 const MongoUtil = require("./MongoUtil.js");
 const ObjectId = require('mongodb').ObjectId;
 const { response } = require('express');
@@ -25,7 +25,13 @@ app.use(cors());
 
 async function main() {
     // connect to radiology_cases database in mongoDB
-    await MongoUtil.connect(process.env.MONGO_URL, 'radiology_cases');
+    const mongoUrl = process.env.MONGO_URI;
+    const dbName = process.env.DB_NAME;
+
+    console.log('Mongo URL:', mongoUrl);  // Debugging purpose
+    console.log('Database Name:', dbName);  // Debugging purpose
+
+    await MongoUtil.connect(mongoUrl, dbName);
 
     // retrieve data from report endpoint url from reportsData collection
     app.get('/report', async (req, res) => {
